@@ -12,7 +12,6 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            /* Ensure the body takes full viewport height */
             min-height: 100vh;
         }
     </style>
@@ -26,7 +25,7 @@
          
          <div class="absolute inset-0 bg-black/60"></div>
 
-        <a href="https://nazmul6588764.github.io/About-of-stark/" onclick="alert('Going back to the main page!')" 
+        <a href="#" id="back-button" 
            class="absolute top-6 left-6 z-20 text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
             <i class="fas fa-arrow-left"></i> 
             Back
@@ -42,7 +41,7 @@
                 <p id="uid-display" class="text-5xl md:text-6xl font-black mt-3 text-orange-500 cursor-pointer transition-transform hover:scale-[1.01]" 
                    title="Click to copy UID" 
                    onclick="copyUID()">
-                    1234567890
+                    6763548917
                 </p>
                 <p id="copy-message" class="text-green-400 h-4 mt-2 text-sm transition-opacity opacity-0">UID Copied!</p>
             </div>
@@ -62,37 +61,41 @@
 
     <script>
         // --- CONFIGURATION ---
-        // *** Change your UID here ***
+        // *** আপনার আসল UID এখানে পরিবর্তন করুন ***
         const myUID = "6763548917"; 
         // --- END CONFIGURATION ---
 
-        // Set UID on the page when the script loads
+        // সেট UID
         document.getElementById('uid-display').textContent = myUID;
 
-        // Function to copy UID to clipboard
+        // **Back বাটনে ক্লিক করলে ব্রাউজারের ব্যাক ফাংশন চালু হবে**
+        // এটি নিশ্চিত করবে যে কোনো অ্যালার্ট না দিয়েই ব্যবহারকারী আগের পেজে ফিরে যেতে পারবে।
+        document.getElementById('back-button').addEventListener('click', function(event) {
+            event.preventDefault(); // href="#"-এর ডিফল্ট আচরণ বন্ধ করা হয়েছে
+            window.history.back(); // ব্যবহারকারীকে ব্রাউজার হিস্টরির আগের পেজে ফিরিয়ে নিয়ে যাবে
+        });
+        
+        
+        // Function to copy UID to clipboard (আগের কোডটি অপরিবর্তিত আছে)
         function copyUID() {
             const uidText = document.getElementById('uid-display').textContent;
             
-            // Use the modern Clipboard API (works best in modern browsers)
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(uidText).then(() => {
                     showCopyMessage();
                 }).catch(err => {
                     console.error('Failed to copy using clipboard API: ', err);
-                    // Fallback if the modern API fails
                     fallbackCopyTextToClipboard(uidText);
                 });
             } else {
-                // Fallback for older browsers
                 fallbackCopyTextToClipboard(uidText);
             }
         }
         
-        // Classic method using a temporary textarea
         function fallbackCopyTextToClipboard(text) {
             const textArea = document.createElement("textarea");
             textArea.value = text;
-            textArea.style.position = 'fixed'; // Prevents scrolling
+            textArea.style.position = 'fixed';
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
@@ -105,7 +108,6 @@
             document.body.removeChild(textArea);
         }
 
-        // Function to show and hide the "UID Copied!" message
         function showCopyMessage() {
             const copyMessage = document.getElementById('copy-message');
             copyMessage.style.opacity = '1';
