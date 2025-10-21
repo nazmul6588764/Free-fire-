@@ -417,4 +417,96 @@
         }
 
         function copyUID() { copyText(myUID, 'UID Copied!'); }
-        function copyProfileLink() { co
+        function copyProfileLink() 
+        { copyText(window.location.href, 'Profile Link Copied!'); }
+        
+        function initParticles() {
+            particlesJS('particles-js', { "particles": { "number": { "value": 80, "density": { "enable": true, "value_area": 800 } }, "color": { "value": "#ff4500" }, "shape": { "type": "circle" }, "opacity": { "value": 0.6, "random": true, "anim": { "enable": false } }, "size": { "value": 4, "random": true, "anim": { "enable": false } }, "line_linked": { "enable": true, "distance": 150, "color": "#ff8c00", "opacity": 0.4, "width": 1 }, "move": { "enable": true, "speed": 2, "direction": "none", "random": true, "straight": false, "out_mode": "out", "bounce": false } }, "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" }, "resize": true } }, "retina_detect": true });
+        }
+
+        const themeToggler = document.getElementById('theme-toggler');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        function updateThemeIcon(theme) {
+            if (theme === 'light') { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); } 
+            else { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+        }
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                body.classList.add('dark');
+                body.classList.remove('light');
+            } else {
+                body.classList.add('light');
+                body.classList.remove('dark');
+            }
+            updateThemeIcon(theme);
+            safeLocalStorage('set', 'theme', theme);
+        }
+
+        applyTheme(safeLocalStorage('get', 'theme') || 'dark');
+
+        themeToggler.addEventListener('click', () => {
+            const currentTheme = body.classList.contains('dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        });
+        
+        // Comment System (Unchanged)
+        const commentList = document.getElementById('comment-list');
+        const commentInput = document.getElementById('comment-input');
+        const addCommentBtn = document.getElementById('add-comment-btn');
+
+        let comments = safeLocalStorage('get', 'ff_comments') ? JSON.parse(safeLocalStorage('get', 'ff_comments')) : [];
+
+        function renderComments() {
+            commentList.innerHTML = '';
+            comments.forEach((comment, index) => {
+                const commentDiv = document.createElement('div');
+                commentDiv.className = 'flex justify-between items-start p-3 bg-gray-800 rounded-lg border border-gray-700';
+                commentDiv.innerHTML = `
+                    <div>
+                        <p class="text-sm font-semibold text-orange-400">${comment.name}</p>
+                        <p class="text-white mt-1 text-sm">${comment.text}</p>
+                        <p class="text-xs text-gray-500 mt-1">${comment.time}</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-red-500 text-lg ml-3" onclick="deleteComment(${index})">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+                commentList.appendChild(commentDiv);
+            });
+        }
+
+        function addComment() {
+            const text = commentInput.value.trim();
+            if (text) {
+                const newComment = {
+                    name: "Gamer " + Math.floor(Math.random() * 1000), 
+                    text: text,
+                    time: new Date().toLocaleTimeString()
+                };
+                comments.push(newComment);
+                safeLocalStorage('set', 'ff_comments', JSON.stringify(comments));
+                renderComments();
+                commentInput.value = '';
+            }
+        }
+
+        function deleteComment(index) {
+            comments.splice(index, 1);
+            safeLocalStorage('set', 'ff_comments', JSON.stringify(comments));
+            renderComments();
+        }
+
+        addCommentBtn.addEventListener('click', addComment);
+        commentInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') { addComment(); }
+        });
+
+        renderComments(); // Initial render of comments
+    </script>
+</body>
+</html>
+
